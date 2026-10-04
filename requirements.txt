@@ -1,0 +1,21 @@
+# Heart Guard V1 — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# ── Core Backend ──────────────────────────────────────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9        # Required by FastAPI for form data
+
+# ── Database ──────────────────────────────────────────────────────────────────
+aiosqlite==0.20.0
+
+# ── Signal Processing ─────────────────────────────────────────────────────────
+heartpy==1.2.7
+scipy==1.14.1
+numpy==1.26.4
+
+# ── Simulator (dev only) ──────────────────────────────────────────────────────
+httpx==0.27.2                  # For simulator.py HTTP mode
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+python-dotenv==1.0.1           # .env loading

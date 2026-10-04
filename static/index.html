@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart Guard V1 — Personal Cardiac Pattern Intelligence</title>
+  <meta name="description" content="Heart Guard V1 is a deterministic personal health monitoring system providing early-warning cardiac pattern alerts based on personal baseline tracking.">
+  
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/png" href="/static/images/Logo.png">
+  
+  <!-- Master CSS -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  
+  <!-- Chart.js for Time-Series Visualizer -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       NAVIGATION BAR
+       ========================================================================== -->
+  <nav class="navbar" id="navbar">
+    <div class="brand">
+      <img src="/static/images/Logo.png" alt="Heart Guard Logo" class="brand-logo">
+      <span class="brand-name">HEART GUARD</span>
+      <span class="brand-tag">V1.0 LIVE</span>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="#overview" class="nav-link">Overview</a></li>
+      <li><a href="#benefits" class="nav-link">Benefits</a></li>
+      <li><a href="#dashboard" class="nav-link">Live Dashboard</a></li>
+      <li><a href="#simulator" class="nav-link">Simulator</a></li>
+      <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
+      <li><a href="#architecture" class="nav-link">Architecture</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <div class="status-pill" id="engine-status">
+        <span class="status-dot"></span> WebSocket Live
+      </div>
+      <button class="btn-primary" id="btn-header-sos">
+        <span>🚨</span> SOS
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       HERO SECTION
+       ========================================================================== -->
+  <section class="hero-section" id="overview">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-text-content">
+          <div class="hero-badge">
+            <span>⚡</span> Deterministic Pattern Intelligence
+          </div>
+          <h1 class="hero-title">
+            Rise Above the Noise.<br>
+            <span>Protect What Matters.</span>
+          </h1>
+          <p class="hero-subtitle">
+            Heart Guard V1 monitors your personal cardiac baseline in real time. Powered by zero-phase PPG signal filtering, deterministic activity gating, and stateful pattern alert escalation.
+          </p>
+          
+          <div class="hero-buttons">
+            <a href="#dashboard" class="btn-primary">
+              <span>📊</span> Launch Live Dashboard
+            </a>
+            <a href="#simulator" class="btn-secondary">
+              <span>⚡</span> Run Scenario Simulator
+            </a>
+          </div>
+
+          <div class="hero-stats-row">
+            <div class="stat-item">
+              <span class="stat-val" id="hero-stat-latency">&lt; 50ms</span>
+              <span class="stat-label">Ingest Latency</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-val">0.5 - 12 Hz</span>
+              <span class="stat-label">PPG Bandpass</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-val">100%</span>
+              <span class="stat-label">Deterministic</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Pulse Wave Visualizer Card -->
+        <div class="hero-visualizer-card">
+          <div class="vis-header">
+            <div class="vis-title">
+              <span style="color: var(--primary);">●</span> Live PPG Sensor Stream
+            </div>
+            <div class="pulse-bpm-box">
+              <span class="bpm-num" id="hero-bpm">68</span>
+              <span class="bpm-unit">BPM</span>
+            </div>
+          </div>
+
+          <div class="ecg-canvas-container">
+            <canvas id="ecg-canvas"></canvas>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); font-family: var(--font-mono);">
+            <span>Signal: <strong style="color: var(--emerald);" id="hero-signal-quality">GOOD (98%)</strong></span>
+            <span>Sampling: <strong>100 Hz</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       BENEFITS SECTION
+       ========================================================================== -->
+  <section class="benefits-section" id="benefits">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Engine Features</span>
+        <h2 class="section-title">Designed Around Your Personal Baseline</h2>
+        <p class="section-desc">
+          Unlike generic wearables that compare you to static population averages, Heart Guard V1 learns your unique body physiology.
+        </p>
+      </div>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon-wrapper">🎯</div>
+          <h3 class="benefit-title">Personal Baseline Relative Metrics</h3>
+          <p class="benefit-text">
+            Measures heart rate anomalies in standard deviation Z-scores relative to your established resting baseline, eliminating false alarms from high or low natural resting rates.
+          </p>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon-wrapper">🏃</div>
+          <h3 class="benefit-title">Activity-Gated Alert Engine</h3>
+          <p class="benefit-text">
+            Integrated accelerometer state classification automatically relaxes HR thresholds during light activity or exercise, ensuring workout heart rates are never misclassified as anomalies.
+          </p>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon-wrapper">🛡️</div>
+          <h3 class="benefit-title">Multi-Tier Escalation Safeguard</h3>
+          <p class="benefit-text">
+            Requires a minimum 3 to 7 consecutive anomalous windows before escalating alert tiers (Normal → Worth Noting → Worth Watching → Medical Attention → SOS). Single noisy readings are discarded.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       LIVE DASHBOARD SECTION
+       ========================================================================== -->
+  <section class="dashboard-section" id="dashboard">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Live Engine Dashboard</span>
+        <h2 class="section-title">Real-Time Health Monitoring Console</h2>
+        <p class="section-desc">
+          Direct WebSocket push stream connected to the local FastAPI Heart Guard backend.
+        </p>
+      </div>
+
+      <div class="dashboard-container">
+        <!-- Dashboard Topbar -->
+        <div class="dashboard-topbar">
+          <div class="dash-user-info">
+            <div class="avatar">HG</div>
+            <div>
+              <div class="user-name">User Profile: Demo Patient</div>
+              <div class="user-id">ID: user_001 • Sensor: PPG-ACCEL-TEMP-v1</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="status-pill" id="calibration-badge">
+              CALIBRATING (0/100)
+            </div>
+            <button class="btn-secondary" id="btn-refresh-dash" onclick="location.reload();">
+              🔄 Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Ribbon Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>Heart Rate</span>
+              <span>❤️</span>
+            </div>
+            <div class="metric-val-group">
+              <span class="metric-big-val" id="dash-bpm" style="color: var(--primary);">68</span>
+              <span class="metric-unit">BPM</span>
+            </div>
+            <span class="metric-badge badge-good">RESTING STATE</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>Activity State</span>
+              <span>👟</span>
+            </div>
+            <div class="metric-val-group">
+              <span class="metric-big-val" id="dash-activity" style="color: var(--cyan); font-size: 1.4rem;">RESTING</span>
+            </div>
+            <span class="metric-badge badge-fair">MAG: 9.8 m/s²</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>Body Temp</span>
+              <span>🌡️</span>
+            </div>
+            <div class="metric-val-group">
+              <span class="metric-big-val" id="dash-temp" style="color: var(--emerald);">36.7</span>
+              <span class="metric-unit">°C</span>
+            </div>
+            <span class="metric-badge badge-good">NORMAL (36.5-37.5)</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>Signal Quality</span>
+              <span>📡</span>
+            </div>
+            <div class="metric-val-group">
+              <span class="metric-big-val" id="dash-quality" style="color: var(--emerald); font-size: 1.4rem;">GOOD</span>
+            </div>
+            <span class="metric-badge badge-good">CONFIDENCE: 100%</span>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-main-grid">
+          <!-- 24h Trend Chart -->
+          <div class="chart-card">
+            <div class="card-title">
+              <span>📈 Live Heart Rate & Baseline Trend</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;">Updates every reading</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="trend-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Alert & Pattern Status Card -->
+          <div class="alert-banner-card status-normal" id="alert-banner">
+            <div>
+              <div class="card-title" style="margin-bottom: 12px;">🚨 Alert Engine Status</div>
+              <div class="alert-tier-tag tier-normal" id="alert-tier-tag">NORMAL TIER 0</div>
+              <p class="alert-explanation" id="alert-explanation">
+                Your heart rate is within your personal resting baseline range. No anomalous patterns detected.
+              </p>
+            </div>
+
+            <div>
+              <div id="sos-btn-container" style="display: none;">
+                <button class="btn-sos" id="btn-banner-sos">
+                  <span>🚨</span> TRIGGER EMERGENCY SOS NOW
+                </button>
+              </div>
+              <p class="alert-disclaimer">
+                This is a personal pattern alert, not a medical diagnosis.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Baseline Panel -->
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 20px; margin-bottom: 28px;">
+          <div class="card-title" style="margin-bottom: 16px;">
+            <span>🧬 Personal Baseline Metrics (Layer 2 DB)</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Resting HR Mean</div>
+              <div style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--emerald);" id="baseline-mean">68 BPM</div>
+            </div>
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Std Deviation</div>
+              <div style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--cyan);" id="baseline-std">±5.2 BPM</div>
+            </div>
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Exercise HR Mean</div>
+              <div style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--primary);" id="baseline-exercise">130 BPM</div>
+            </div>
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-dim);">Baseline Samples</div>
+              <div style="font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700; color: var(--text-main);" id="baseline-samples">150 samples</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulator Controls Bar -->
+        <div class="simulator-panel" id="simulator">
+          <div class="card-title" style="margin-bottom: 16px;">
+            <span>⚡ Hardware Scenario Simulator (1-Click Pipeline Test)</span>
+            <span style="font-size: 0.8rem; color: var(--cyan); font-weight: 500;">POST /api/v1/ingest</span>
+          </div>
+          <div class="sim-btn-grid">
+            <button class="sim-btn" id="sim-normal">
+              <span class="sim-icon">🟢</span>
+              <span>Normal Resting</span>
+            </button>
+            <button class="sim-btn" id="sim-elevated">
+              <span class="sim-icon">🟡</span>
+              <span>Elevated Rest</span>
+            </button>
+            <button class="sim-btn" id="sim-exercise">
+              <span class="sim-icon">🔵</span>
+              <span>Exercise Normal</span>
+            </button>
+            <button class="sim-btn" id="sim-noisy">
+              <span class="sim-icon">⚪</span>
+              <span>Noisy Signal</span>
+            </button>
+            <button class="sim-btn" id="sim-extreme">
+              <span class="sim-icon">🔴</span>
+              <span>Extreme Spike</span>
+            </button>
+            <button class="sim-btn" id="sim-seed" style="border-color: var(--cyan); color: var(--cyan);">
+              <span class="sim-icon">⚡</span>
+              <span>Seed Baseline</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Alert History Table -->
+        <div style="margin-top: 28px;">
+          <div class="card-title" style="margin-bottom: 16px;">📋 Alert History Log</div>
+          <div style="overflow-x: auto; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: var(--radius-md);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-glass-bright); font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">
+                  <th style="padding: 12px;">Timestamp</th>
+                  <th style="padding: 12px;">Status Tier</th>
+                  <th style="padding: 12px;">HR BPM</th>
+                  <th style="padding: 12px;">Pattern Explanation</th>
+                  <th style="padding: 12px;">Severity</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 20px;">
+                    Loading alert history...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       TESTIMONIALS SECTION
+       ========================================================================== -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Loved by Professionals</span>
+        <h2 class="section-title">Trusted by Athletes & Medical Innovators</h2>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="quote-text">
+            "Heart Guard's activity-gated anomaly engine solves the biggest challenge in remote patient monitoring — false alarms during exertion."
+          </p>
+          <div class="author-group">
+            <div class="avatar" style="background: linear-gradient(135deg, #ff2a5f 0%, #7f00ff 100%); color: white;">DR</div>
+            <div>
+              <div class="author-name">Dr. Elena Rostova</div>
+              <div class="author-role">Cardiologist & Researcher</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="quote-text">
+            "Tracking relative Z-scores against my personal resting baseline gave me actionable clarity on my overtraining state."
+          </p>
+          <div class="author-group">
+            <div class="avatar" style="background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color: var(--bg-dark);">MK</div>
+            <div>
+              <div class="author-name">Markus Vance</div>
+              <div class="author-role">Ultra-Marathon Athlete</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="quote-text">
+            "Zero cloud lock-in with clean deterministic Python logic. It sets a new standard for privacy-first wearable intelligence."
+          </p>
+          <div class="author-group">
+            <div class="avatar" style="background: linear-gradient(135deg, #00f5a0 0%, #00f2fe 100%); color: var(--bg-dark);">SC</div>
+            <div>
+              <div class="author-name">Sarah Chen</div>
+              <div class="author-role">Embedded Bio-Sensor Architect</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       ARCHITECTURE & DATA FLOW
+       ========================================================================== -->
+  <section style="padding: 80px 0; border-top: 1px solid var(--border-glass);" id="architecture">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">System Architecture</span>
+        <h2 class="section-title">4-Layer Deterministic Data Pipeline</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+        <div class="benefit-card">
+          <div style="font-family: var(--font-mono); color: var(--cyan); font-weight: 700; margin-bottom: 8px;">LAYER 0</div>
+          <h4 style="font-family: var(--font-display); margin-bottom: 8px;">Raw Payload</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Microcontroller PPG, 3-axis Accel, Temp JSON payload.</p>
+        </div>
+
+        <div class="benefit-card">
+          <div style="font-family: var(--font-mono); color: var(--indigo); font-weight: 700; margin-bottom: 8px;">LAYER 1</div>
+          <h4 style="font-family: var(--font-display); margin-bottom: 8px;">Signal Processor</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Butterworth bandpass filter, HeartPy beat confidence.</p>
+        </div>
+
+        <div class="benefit-card">
+          <div style="font-family: var(--font-mono); color: var(--emerald); font-weight: 700; margin-bottom: 8px;">LAYER 2</div>
+          <h4 style="font-family: var(--font-display); margin-bottom: 8px;">SQLite Baseline DB</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Async SQLAlchemy sliding window resting & exercise profile.</p>
+        </div>
+
+        <div class="benefit-card">
+          <div style="font-family: var(--font-mono); color: var(--primary); font-weight: 700; margin-bottom: 8px;">LAYER 3</div>
+          <h4 style="font-family: var(--font-display); margin-bottom: 8px;">Alert & WebSocket</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Stateful tier escalation, explanation & live dashboard push.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       EMERGENCY SOS OVERLAY MODAL
+       ========================================================================== -->
+  <div class="modal-overlay" id="sos-modal">
+    <div class="modal-box">
+      <div class="modal-icon-sos">🚨</div>
+      <h3 class="modal-title">EMERGENCY SOS ACTIVATED</h3>
+      <p class="modal-desc">
+        Sustained extreme cardiac anomaly detected. Dispatching emergency response alert in:
+      </p>
+
+      <div class="emergency-countdown" id="sos-countdown">5</div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-cancel-sos">CANCEL SOS</button>
+        <button class="btn-confirm-sos" id="btn-confirm-sos">DISPATCH NOW</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="brand">
+          <img src="/static/images/Logo.png" alt="Logo" class="brand-logo" style="width: 28px; height: 28px;">
+          <span class="brand-name" style="font-size: 1.1rem;">HEART GUARD V1</span>
+        </div>
+        <div class="footer-copy">
+          © 2026 Heart Guard Systems. Personal pattern intelligence — Not a medical diagnosis tool.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dashboard Controller JavaScript -->
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
